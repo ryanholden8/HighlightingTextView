@@ -3,29 +3,32 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		87D223F026E6FF20006A8A45 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D223EF26E6FF20006A8A45 /* AppDelegate.swift */; };
-		87D223F226E6FF20006A8A45 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D223F126E6FF20006A8A45 /* SceneDelegate.swift */; };
-		87D223F426E6FF20006A8A45 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D223F326E6FF20006A8A45 /* ViewController.swift */; };
-		87D223F726E6FF20006A8A45 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 87D223F526E6FF20006A8A45 /* Main.storyboard */; };
-		87D223F926E6FF22006A8A45 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 87D223F826E6FF22006A8A45 /* Assets.xcassets */; };
-		87D223FC26E6FF22006A8A45 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 87D223FA26E6FF22006A8A45 /* LaunchScreen.storyboard */; };
-		87D2240426E6FF6C006A8A45 /* HighlightTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D2240326E6FF6C006A8A45 /* HighlightTextView.swift */; };
+		870A7D862868A94A008575D1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 870A7D7B2868A94A008575D1 /* AppDelegate.swift */; };
+		870A7D872868A94A008575D1 /* CustomLayoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 870A7D7C2868A94A008575D1 /* CustomLayoutManager.swift */; };
+		870A7D8B2868A94A008575D1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 870A7D832868A94A008575D1 /* ViewController.swift */; };
+		870A7D8C2868A94A008575D1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 870A7D842868A94A008575D1 /* Assets.xcassets */; };
+		870A7D8D2868A94A008575D1 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 870A7D852868A94A008575D1 /* SceneDelegate.swift */; };
+		8754A3042868AE67003C2887 /* HighlightingTextView in Frameworks */ = {isa = PBXBuildFile; productRef = 8754A3032868AE67003C2887 /* HighlightingTextView */; };
+		87571C1F2868AC1B001E02A4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 870A7D812868A94A008575D1 /* Main.storyboard */; };
+		87571C202868AC1B001E02A4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 870A7D7F2868A94A008575D1 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		87D223EC26E6FF20006A8A45 /* HightlightTextView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HightlightTextView.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		87D223EF26E6FF20006A8A45 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		87D223F126E6FF20006A8A45 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		87D223F326E6FF20006A8A45 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		87D223F626E6FF20006A8A45 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		87D223F826E6FF22006A8A45 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		87D223FB26E6FF22006A8A45 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		87D223FD26E6FF22006A8A45 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		87D2240326E6FF6C006A8A45 /* HighlightTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightTextView.swift; sourceTree = "<group>"; };
+		870A7D7A2868A949008575D1 /* HightlightTextView-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HightlightTextView-Bridging-Header.h"; sourceTree = "<group>"; };
+		870A7D7B2868A94A008575D1 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		870A7D7C2868A94A008575D1 /* CustomLayoutManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomLayoutManager.swift; sourceTree = "<group>"; };
+		870A7D7F2868A94A008575D1 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		870A7D812868A94A008575D1 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		870A7D822868A94A008575D1 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		870A7D832868A94A008575D1 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		870A7D842868A94A008575D1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		870A7D852868A94A008575D1 /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		8754A3022868AE5C003C2887 /* HightlightTextView */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = HightlightTextView; path = ..; sourceTree = "<group>"; };
+		87D223EC26E6FF20006A8A45 /* HighlightTextView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HighlightTextView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,49 +36,60 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8754A3042868AE67003C2887 /* HighlightingTextView in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8754A3012868AE5C003C2887 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				8754A3022868AE5C003C2887 /* HightlightTextView */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		87571C212868AC55001E02A4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		87D223E326E6FF20006A8A45 = {
 			isa = PBXGroup;
 			children = (
-				87D223EE26E6FF20006A8A45 /* HightlightTextView */,
+				8754A3012868AE5C003C2887 /* Packages */,
+				870A7D7B2868A94A008575D1 /* AppDelegate.swift */,
+				870A7D842868A94A008575D1 /* Assets.xcassets */,
+				870A7D812868A94A008575D1 /* Main.storyboard */,
+				870A7D7F2868A94A008575D1 /* LaunchScreen.storyboard */,
+				870A7D7C2868A94A008575D1 /* CustomLayoutManager.swift */,
+				870A7D822868A94A008575D1 /* Info.plist */,
+				870A7D852868A94A008575D1 /* SceneDelegate.swift */,
+				870A7D832868A94A008575D1 /* ViewController.swift */,
 				87D223ED26E6FF20006A8A45 /* Products */,
+				870A7D7A2868A949008575D1 /* HightlightTextView-Bridging-Header.h */,
+				87571C212868AC55001E02A4 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
 		87D223ED26E6FF20006A8A45 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				87D223EC26E6FF20006A8A45 /* HightlightTextView.app */,
+				87D223EC26E6FF20006A8A45 /* HighlightTextView.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		87D223EE26E6FF20006A8A45 /* HightlightTextView */ = {
-			isa = PBXGroup;
-			children = (
-				87D223EF26E6FF20006A8A45 /* AppDelegate.swift */,
-				87D223F126E6FF20006A8A45 /* SceneDelegate.swift */,
-				87D223F326E6FF20006A8A45 /* ViewController.swift */,
-				87D223F526E6FF20006A8A45 /* Main.storyboard */,
-				87D223F826E6FF22006A8A45 /* Assets.xcassets */,
-				87D223FA26E6FF22006A8A45 /* LaunchScreen.storyboard */,
-				87D223FD26E6FF22006A8A45 /* Info.plist */,
-				87D2240326E6FF6C006A8A45 /* HighlightTextView.swift */,
-			);
-			path = HightlightTextView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		87D223EB26E6FF20006A8A45 /* HightlightTextView */ = {
+		87D223EB26E6FF20006A8A45 /* HighlightTextView */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 87D2240026E6FF22006A8A45 /* Build configuration list for PBXNativeTarget "HightlightTextView" */;
+			buildConfigurationList = 87D2240026E6FF22006A8A45 /* Build configuration list for PBXNativeTarget "HighlightTextView" */;
 			buildPhases = (
 				87D223E826E6FF20006A8A45 /* Sources */,
 				87D223E926E6FF20006A8A45 /* Frameworks */,
@@ -85,9 +99,12 @@
 			);
 			dependencies = (
 			);
-			name = HightlightTextView;
+			name = HighlightTextView;
+			packageProductDependencies = (
+				8754A3032868AE67003C2887 /* HighlightingTextView */,
+			);
 			productName = HightlightTextView;
-			productReference = 87D223EC26E6FF20006A8A45 /* HightlightTextView.app */;
+			productReference = 87D223EC26E6FF20006A8A45 /* HighlightTextView.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -101,10 +118,11 @@
 				TargetAttributes = {
 					87D223EB26E6FF20006A8A45 = {
 						CreatedOnToolsVersion = 12.5;
+						LastSwiftMigration = 1340;
 					};
 				};
 			};
-			buildConfigurationList = 87D223E726E6FF20006A8A45 /* Build configuration list for PBXProject "HightlightTextView" */;
+			buildConfigurationList = 87D223E726E6FF20006A8A45 /* Build configuration list for PBXProject "HighlightTextView" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -117,7 +135,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				87D223EB26E6FF20006A8A45 /* HightlightTextView */,
+				87D223EB26E6FF20006A8A45 /* HighlightTextView */,
 			);
 		};
 /* End PBXProject section */
@@ -127,9 +145,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				87D223FC26E6FF22006A8A45 /* LaunchScreen.storyboard in Resources */,
-				87D223F926E6FF22006A8A45 /* Assets.xcassets in Resources */,
-				87D223F726E6FF20006A8A45 /* Main.storyboard in Resources */,
+				87571C202868AC1B001E02A4 /* LaunchScreen.storyboard in Resources */,
+				87571C1F2868AC1B001E02A4 /* Main.storyboard in Resources */,
+				870A7D8C2868A94A008575D1 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -140,33 +158,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				87D223F426E6FF20006A8A45 /* ViewController.swift in Sources */,
-				87D223F026E6FF20006A8A45 /* AppDelegate.swift in Sources */,
-				87D2240426E6FF6C006A8A45 /* HighlightTextView.swift in Sources */,
-				87D223F226E6FF20006A8A45 /* SceneDelegate.swift in Sources */,
+				870A7D8B2868A94A008575D1 /* ViewController.swift in Sources */,
+				870A7D872868A94A008575D1 /* CustomLayoutManager.swift in Sources */,
+				870A7D862868A94A008575D1 /* AppDelegate.swift in Sources */,
+				870A7D8D2868A94A008575D1 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		87D223F526E6FF20006A8A45 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				87D223F626E6FF20006A8A45 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		87D223FA26E6FF22006A8A45 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				87D223FB26E6FF22006A8A45 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		87D223FE26E6FF22006A8A45 /* Debug */ = {
@@ -290,15 +289,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = H6YADKW66T;
-				INFOPLIST_FILE = HightlightTextView/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.ryanholden.HightlightTextView;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ryanholden.HighlightTextView;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "HightlightTextView-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -309,15 +311,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = H6YADKW66T;
-				INFOPLIST_FILE = HightlightTextView/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.ryanholden.HightlightTextView;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ryanholden.HighlightTextView;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "HightlightTextView-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -326,7 +330,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		87D223E726E6FF20006A8A45 /* Build configuration list for PBXProject "HightlightTextView" */ = {
+		87D223E726E6FF20006A8A45 /* Build configuration list for PBXProject "HighlightTextView" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				87D223FE26E6FF22006A8A45 /* Debug */,
@@ -335,7 +339,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		87D2240026E6FF22006A8A45 /* Build configuration list for PBXNativeTarget "HightlightTextView" */ = {
+		87D2240026E6FF22006A8A45 /* Build configuration list for PBXNativeTarget "HighlightTextView" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				87D2240126E6FF22006A8A45 /* Debug */,
@@ -345,6 +349,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8754A3032868AE67003C2887 /* HighlightingTextView */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HighlightingTextView;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 87D223E426E6FF20006A8A45 /* Project object */;
 }

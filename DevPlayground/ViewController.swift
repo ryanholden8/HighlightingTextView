@@ -1,6 +1,6 @@
 //
 //  ViewController.swift
-//  HightlightTextView
+//  HighlightTextView
 //
 //  Created by Ryan Holden on 9/6/21.
 //
@@ -11,7 +11,6 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
     }
 
 

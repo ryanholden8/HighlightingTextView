@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  HightlightTextView
+//  HighlightTextView
 //
 //  Created by Ryan Holden on 9/6/21.
 //
