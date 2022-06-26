@@ -29,15 +29,23 @@ public protocol HighlightingTextView : AnyObject {
 }
 
 public struct TextHighlight: Equatable {
-    var nsRange: NSRange
     
-    var rects: [CGRect]
+    public init(nsRange: NSRange, rects: [CGRect], color: UIColor, cornerRadius: CGFloat) {
+        self.nsRange = nsRange
+        self.rects = rects
+        self.color = color
+        self.cornerRadius = cornerRadius
+    }
     
-    var color: UIColor
+    public var nsRange: NSRange
     
-    var cornerRadius: CGFloat
+    public var rects: [CGRect]
     
-    func draw() {
+    public var color: UIColor
+    
+    public var cornerRadius: CGFloat
+    
+    public func draw() {
         let firstLine = rects.first
         let lastLine = rects.last
         
@@ -448,14 +456,14 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
         }
     }
     
-    func createHighlightUpdateFanOutMenuAction(_ menu: FanOutCircleMenu, _ highlightAtRange: NSRange, newColor: UIColor) -> UIButton {
+    public func createHighlightUpdateFanOutMenuAction(_ menu: FanOutCircleMenu, _ highlightAtRange: NSRange, newColor: UIColor) -> UIButton {
         return menu.createAction(systemName: "circle.fill", pointSize: 36, tintColor: newColor) {[weak self] _ in
             self?.changeHighlightColor(highlightAtRange, newColor: newColor)
             FanOutCircleMenu.currentInstance?.dismiss{}
         }
     }
     
-    func createHighlightDeleteFanOutMenuAction(_ menu: FanOutCircleMenu, _ highlightAtRange: NSRange) -> UIButton {
+    public func createHighlightDeleteFanOutMenuAction(_ menu: FanOutCircleMenu, _ highlightAtRange: NSRange) -> UIButton {
         return menu.createAction(systemName: "trash.circle.fill", pointSize: 36, tintColor: .white, backgroundColor: .black) {[weak self, weak menu] button in
             guard let menu = menu else {return}
             
@@ -472,7 +480,7 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
         }
     }
     
-    func changeHighlightColor(_ highlightAtRange: NSRange, newColor: UIColor) {
+    public func changeHighlightColor(_ highlightAtRange: NSRange, newColor: UIColor) {
         guard var updatedHighlight = highlights.first(where: {$0.nsRange == highlightAtRange}) else {return}
         
         updatedHighlight.color = newColor
@@ -484,7 +492,7 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
         colorForNewHighlight = newColor
     }
     
-    func removeHighlight(_ highlightAtRange: NSRange) {
+    public func removeHighlight(_ highlightAtRange: NSRange) {
         highlights.removeAll{$0.nsRange == highlightAtRange}
     }
 }
@@ -498,7 +506,7 @@ public class FanOutCircleMenu : UIView {
     
     private let radius: CGFloat = 60
     
-    func show(_ actions: [UIView]) {
+    public func show(_ actions: [UIView]) {
         // Remove all old actions
         subviews.forEach{$0.removeFromSuperview()}
         
@@ -546,7 +554,7 @@ public class FanOutCircleMenu : UIView {
         }
     }
     
-    func showOnWindow(_ window: UIWindow, anchoredView: UIView, center: CGPoint) {
+    public func showOnWindow(_ window: UIWindow, anchoredView: UIView, center: CGPoint) {
         let center = anchoredView.convert(center, to: window)
         translatesAutoresizingMaskIntoConstraints = false
         window.addSubview(self)
@@ -573,7 +581,7 @@ public class FanOutCircleMenu : UIView {
         FanOutCircleMenu.currentInstance = self
     }
     
-    func dismiss(completion: @escaping () -> ()) {
+    public func dismiss(completion: @escaping () -> ()) {
         
         let completion = {
             FanOutCircleMenu.currentInstance = nil
@@ -635,7 +643,7 @@ public class FanOutCircleMenu : UIView {
         }
     })
     
-    func createAction(
+    public func createAction(
         systemName: String,
         pointSize: CGFloat,
         tintColor: UIColor,
@@ -662,7 +670,7 @@ public class FanOutCircleMenu : UIView {
         return button
     }
     
-    func confirm(
+    public func confirm(
         actionView: UIView,
         confirmActionView: UIView
     ) {
