@@ -56,7 +56,7 @@ public struct TextHighlight: Equatable {
     }
 }
 
-public class HighlightTextView : UITextView, UIGestureRecognizerDelegate, HighlightingTextView {
+open class HighlightTextView : UITextView, UIGestureRecognizerDelegate, HighlightingTextView {
     public lazy var highlightPanGesture = UIPanGestureRecognizer(target: self, action: #selector(delegateHighlightPan(_:)))
     public lazy var highlightTapGesture = UITapGestureRecognizer(target: self, action: #selector(delegateHighlightTap(_:)))
     
