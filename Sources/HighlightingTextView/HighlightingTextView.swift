@@ -81,13 +81,13 @@ open class HighlightTextView : UITextView, UIGestureRecognizerDelegate, Highligh
         }
     }
     
-    public var currentHighlight: TextHighlight? {
+    open var currentHighlight: TextHighlight? {
         didSet {
             setNeedsDisplay()
         }
     }
     
-    public var editingHighlight: TextHighlight? {
+    open var editingHighlight: TextHighlight? {
         didSet {
             setNeedsDisplay()
         }
@@ -105,11 +105,11 @@ open class HighlightTextView : UITextView, UIGestureRecognizerDelegate, Highligh
         attachHighlightGestures()
     }
     
-    public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+    open override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         gestureRecognizerShouldBeginWithHighlightGesture(gestureRecognizer) ?? true
     }
     
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    open func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         // do not allow scrolling while we highlight
         if otherGestureRecognizer == highlightPanGesture { return false }
         
@@ -126,7 +126,7 @@ open class HighlightTextView : UITextView, UIGestureRecognizerDelegate, Highligh
         handleHighlightTap(gestureRecognizer)
     }
     
-    public override var bounds: CGRect {
+    open override var bounds: CGRect {
         didSet {
             // Did the view change? Is the view valid? Do we have highlights to draw?
             guard oldValue != bounds && !bounds.isEmpty && !highlights.isEmpty else {return}
@@ -139,7 +139,7 @@ open class HighlightTextView : UITextView, UIGestureRecognizerDelegate, Highligh
         }
     }
     
-    public override func draw(_ frame: CGRect) {
+    open override func draw(_ frame: CGRect) {
         super.draw(frame)
         
         for highlight in highlights {
