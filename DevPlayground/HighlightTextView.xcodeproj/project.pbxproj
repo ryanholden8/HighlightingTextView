@@ -27,7 +27,7 @@
 		870A7D832868A94A008575D1 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		870A7D842868A94A008575D1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		870A7D852868A94A008575D1 /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		8754A3022868AE5C003C2887 /* HightlightTextView */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = HightlightTextView; path = ..; sourceTree = "<group>"; };
+		878DF738286A0FC600B41EDD /* HighlightingTextView */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = HighlightingTextView; path = ..; sourceTree = "<group>"; };
 		87D223EC26E6FF20006A8A45 /* HighlightTextView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HighlightTextView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -46,7 +46,7 @@
 		8754A3012868AE5C003C2887 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				8754A3022868AE5C003C2887 /* HightlightTextView */,
+				878DF738286A0FC600B41EDD /* HighlightingTextView */,
 			);
 			name = Packages;
 			sourceTree = "<group>";

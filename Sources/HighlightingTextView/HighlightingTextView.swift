@@ -10,7 +10,7 @@ import UIKit
 
 public protocol HighlightingTextView : AnyObject {
     
-    var highlightPanGesture: UIPanGestureRecognizer { get }
+    var highlightPanGesture: HighlightingTextViewPanGesture { get }
     
     var highlightTapGesture: UITapGestureRecognizer { get }
     
@@ -64,8 +64,10 @@ public struct TextHighlight: Equatable {
     }
 }
 
+public class HighlightingTextViewPanGesture : UIPanGestureRecognizer {}
+
 open class HighlightTextView : UITextView, UIGestureRecognizerDelegate, HighlightingTextView {
-    public lazy var highlightPanGesture = UIPanGestureRecognizer(target: self, action: #selector(delegateHighlightPan(_:)))
+    public lazy var highlightPanGesture = HighlightingTextViewPanGesture(target: self, action: #selector(delegateHighlightPan(_:)))
     public lazy var highlightTapGesture = UITapGestureRecognizer(target: self, action: #selector(delegateHighlightTap(_:)))
     
     public var startingPoint: UITextPosition?
@@ -114,12 +116,18 @@ open class HighlightTextView : UITextView, UIGestureRecognizerDelegate, Highligh
     }
     
     open override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        gestureRecognizerShouldBeginWithHighlightGesture(gestureRecognizer) ?? true
+        //print("SHOULD BEGIN: \(String(describing: type(of: gestureRecognizer)).prefix(15)): \(gestureRecognizerShouldBeginWithHighlightGesture(gestureRecognizer)) \(super.gestureRecognizerShouldBegin(gestureRecognizer))")
+        return gestureRecognizerShouldBeginWithHighlightGesture(gestureRecognizer) ?? super.gestureRecognizerShouldBegin(gestureRecognizer)
     }
     
     open func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        //print("SHOULD SIMU: \(String(describing: type(of: gestureRecognizer)).prefix(15)) \(String(describing: type(of: otherGestureRecognizer)).prefix(15))")
         // do not allow scrolling while we highlight
-        if otherGestureRecognizer == highlightPanGesture { return false }
+        // We detect on type and instead of instance because we have nested HighlighingTextViews
+        if otherGestureRecognizer is HighlightingTextViewPanGesture { return false }
+        
+        // Not sure if this is needed.. maybe cuts down on unwanted fan out menu popups?
+        //if otherGestureRecognizer == highlightTapGesture {return false}
         
         // HighlighTapGesture and the default iOS long tap for select, lookup, copy, etc should work together
         return true
@@ -167,7 +175,15 @@ open class HighlightTextView : UITextView, UIGestureRecognizerDelegate, Highligh
 extension HighlightingTextView where Self : UITextView, Self : UIGestureRecognizerDelegate {
     
     func gestureRecognizerShouldBeginWithHighlightGesture(_ gestureRecognizer: UIGestureRecognizer) -> Bool? {
-        guard gestureRecognizer == highlightPanGesture else {return nil}
+        guard gestureRecognizer == highlightPanGesture else {
+            // We may have nested HighlightingTextViews
+            // So if we are competing - we want to NOT began the parent highlighting gesture
+            // otherwsie this may disable scrolling on parent views
+            if gestureRecognizer is HighlightingTextViewPanGesture {
+                return false
+            }
+            return nil
+        }
         
         // If user is panning at all the menu should auto hide
         FanOutCircleMenu.currentInstance?.dismiss{}
@@ -302,7 +318,11 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
         currentPoint = nil
         startingPoint = nil
         if let editingHighlight = editingHighlight {
-            highlights.append(editingHighlight)
+            if editingHighlight.nsRange.length > 0 {
+                highlights.append(editingHighlight)
+            } else {
+                print("Removing highlight. It was empty after finishing edit.")
+            }
             self.editingHighlight = nil
         }
     }
@@ -325,7 +345,7 @@ extension UITextView {
             let charRangeRight = characterRange(at: CGPoint(x: location.x + charRect.width, y: location.y))
             let charRangeLeftNsRange = charRangeLeft != nil ? toNSRange(charRangeLeft!) : charNsRange
             let charRangeRightNsRange = charRangeRight != nil ? toNSRange(charRangeRight!) : charNsRange
-                
+            
             charNsRange = charRangeLeftNsRange.union(charRangeRightNsRange)
             
             let newCharString = attributedText.attributedSubstring(from: charNsRange).string
@@ -345,42 +365,57 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
         
         switch (gestureRecognizer.state) {
         case .began:
-            if let charNsRange = characterNSRange(at: location, adjustToNearestNonWhiteSpace: true) {
-                if let editingHighlight = highlights.first(where: {$0.nsRange.overlaps(charNsRange)}) {
-                    
-                    guard let range = toTextRange(editingHighlight.nsRange) else {
-                        return print("Failed to get textRange for editingHighlight: \(editingHighlight)")
-                    }
-                    
-                    let distanceFromStart = charNsRange.lowerBound - editingHighlight.nsRange.lowerBound
-                    let distanceFromEnd = editingHighlight.nsRange.upperBound - charNsRange.upperBound
-                    
-                    let closeDistanceToEnds = 12
-                    
-                    if closeDistanceToEnds > editingHighlight.nsRange.length {
-                        // User is editing small highlight
-                        startingPoint = gestureRecognizer.velocity(in: self).x > 0
-                            ? closestPosition(to: CGPoint.zero, within: range)
-                            : closestPosition(to: CGPoint.init(x: CGFloat.greatestFiniteMagnitude, y: CGFloat.greatestFiniteMagnitude), within: range)
-                    } else if distanceFromStart < closeDistanceToEnds {
-                        // User is editing the beginning of the highlight
-                        startingPoint = closestPosition(to: CGPoint.init(x: CGFloat.greatestFiniteMagnitude, y: CGFloat.greatestFiniteMagnitude), within: range)
-                    } else if distanceFromEnd < closeDistanceToEnds {
-                        // User is editing the end of the highlight
-                        startingPoint = closestPosition(to: CGPoint.zero, within: range)
-                    } else {
-                        print("Attempting to edit highlight by dragging over the middle. Aborting edit.")
-                        gestureRecognizer.state = .cancelled
-                    }
-                    
-                    //print("Distance: Start: \(distanceFromStart) | End: \(distanceFromEnd)")
-                    
-                    if startingPoint != nil {
-                        handleEditHighlightStart(gestureRecognizer, location, editingHighlight)
-                    }
-                } else {
-                    handleNewHighlightStart(gestureRecognizer, location)
-                }
+            // Are there characters at this range?
+            guard let charNsRange = characterNSRange(at: location, adjustToNearestNonWhiteSpace: true) else {
+                print("No characters found at gesture pan beginning. Aborting highlight.")
+                return gestureRecognizer.state = .cancelled
+            }
+            
+            let touchLocation = gestureRecognizer.location(in: self)
+            
+            let isTouchInAnExclusionPath = textContainer.exclusionPaths.contains{$0.bounds.contains(touchLocation)}
+            
+            if isTouchInAnExclusionPath {
+                print("ExclusionPath detected at start of highlight. Aborting highlight.")
+                return gestureRecognizer.state = .cancelled
+            }
+            
+            // Start a new highlight only when we are not editing an existing one
+            guard let editingHighlight = highlights.first(where: {$0.nsRange.overlaps(charNsRange)}) else {
+                return handleNewHighlightStart(gestureRecognizer, location)
+            }
+            
+            // Never expected
+            guard let range = toTextRange(editingHighlight.nsRange) else {
+                print("Failed to get textRange for editingHighlight: \(editingHighlight)")
+                return gestureRecognizer.state = .cancelled
+            }
+            
+            let distanceFromStart = charNsRange.lowerBound - editingHighlight.nsRange.lowerBound
+            let distanceFromEnd = editingHighlight.nsRange.upperBound - charNsRange.upperBound
+            
+            let closeDistanceToEnds = 12
+            
+            if closeDistanceToEnds > editingHighlight.nsRange.length {
+                // User is editing small highlight
+                startingPoint = gestureRecognizer.velocity(in: self).x > 0
+                    ? closestPosition(to: CGPoint.zero, within: range)
+                    : closestPosition(to: CGPoint.init(x: CGFloat.greatestFiniteMagnitude, y: CGFloat.greatestFiniteMagnitude), within: range)
+            } else if distanceFromStart < closeDistanceToEnds {
+                // User is editing the beginning of the highlight
+                startingPoint = closestPosition(to: CGPoint.init(x: CGFloat.greatestFiniteMagnitude, y: CGFloat.greatestFiniteMagnitude), within: range)
+            } else if distanceFromEnd < closeDistanceToEnds {
+                // User is editing the end of the highlight
+                startingPoint = closestPosition(to: CGPoint.zero, within: range)
+            } else {
+                print("Attempting to edit highlight by dragging over the middle. Aborting edit.")
+                gestureRecognizer.state = .cancelled
+            }
+            
+            //print("Distance: Start: \(distanceFromStart) | End: \(distanceFromEnd)")
+            
+            if startingPoint != nil {
+                handleEditHighlightStart(gestureRecognizer, location, editingHighlight)
             }
         case .changed:
             if currentHighlight != nil {
@@ -410,27 +445,7 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
                 return
             }
             
-            if let charRange = characterRange(at: location) {
-                var charNsRange = toNSRange(charRange)
-                
-                // If whitespace, widen the range otherwise a new highlight is started unexpectedly
-                let charString = self.attributedText.attributedSubstring(from: charNsRange).string.trimmingCharacters(in: .whitespaces)
-                
-                if charString.isEmpty {
-                    let charRect = firstRect(for: charRange)
-                    // Note: ranges might be null because it's whitespace before a new line or something
-                    let charRangeLeft = characterRange(at: CGPoint(x: location.x - charRect.width, y: location.y))
-                    let charRangeRight = characterRange(at: CGPoint(x: location.x + charRect.width, y: location.y))
-                    let charRangeLeftNsRange = charRangeLeft != nil ? toNSRange(charRangeLeft!) : charNsRange
-                    let charRangeRightNsRange = charRangeRight != nil ? toNSRange(charRangeRight!) : charNsRange
-                        
-                    charNsRange = charRangeLeftNsRange.union(charRangeRightNsRange)
-                    
-                    let newCharString = self.attributedText.attributedSubstring(from: charNsRange).string
-                    
-                    print("Whitespace selecting on gesture start, adjusting range `\(newCharString)`")
-                }
-                
+            if let charNsRange = characterNSRange(at: location, adjustToNearestNonWhiteSpace: true) {
                 if let editingHighlight = highlights.first(where: {$0.nsRange.overlaps(charNsRange)}) {
                     let isSelectedRangeInsideUserTap = selectedRange.length > 0 && selectedRange.overlaps(charNsRange)
                     guard !isSelectedRangeInsideUserTap else {
