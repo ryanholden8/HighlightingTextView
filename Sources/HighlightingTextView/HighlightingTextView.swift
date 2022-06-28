@@ -434,7 +434,7 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
     }
     
     func handleHighlightTap(_ gestureRecognizer: UITapGestureRecognizer) {
-        let location = highlightTapGesture.location(in: self)
+        var location = highlightTapGesture.location(in: self)
         
         switch (gestureRecognizer.state) {
         case .ended:
@@ -462,6 +462,9 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
             guard !actions.isEmpty else {
                 return print("No actions provided for highlight at range: \(editingHighlight.nsRange). Aborting highlight menu.")
             }
+            
+            // To make it feel a little more center (since you usually move your finger a little downward aftering a tap)
+            location.y += 10
             
             menu.showOnWindow(window, anchoredView: self, center: location)
             
@@ -519,6 +522,19 @@ public class FanOutCircleMenu : UIView {
     private var confirmActionConstraints: [(UIView, [NSLayoutConstraint])] = []
     
     private let radius: CGFloat = 60
+    
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        // If the user does not tap any button but the back view (which is invisible) then we should dismiss the menu
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tappedOnMenuBackView)))
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    @IBAction func tappedOnMenuBackView() {
+        FanOutCircleMenu.currentInstance?.dismiss {}
+    }
     
     public func show(_ actions: [UIView]) {
         // Remove all old actions
