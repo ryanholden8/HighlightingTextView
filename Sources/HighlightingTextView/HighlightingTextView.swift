@@ -30,22 +30,20 @@ public protocol HighlightingTextView : AnyObject {
 
 public struct TextHighlight: Equatable {
     
-    public init(nsRange: NSRange, rects: [CGRect], color: UIColor, cornerRadius: CGFloat) {
+    public init(nsRange: NSRange, color: UIColor, cornerRadius: CGFloat) {
         self.nsRange = nsRange
-        self.rects = rects
         self.color = color
         self.cornerRadius = cornerRadius
     }
     
     public var nsRange: NSRange
     
-    public var rects: [CGRect]
-    
     public var color: UIColor
     
     public var cornerRadius: CGFloat
     
-    public func draw() {
+    public func draw(_ textView: UITextView) {
+        let rects = textView.lineRectsFor(range: nsRange)
         let firstLine = rects.first
         let lastLine = rects.last
         
@@ -87,7 +85,7 @@ open class HighlightTextView : UITextView, UIGestureRecognizerDelegate, Highligh
     
     open var highlights: [TextHighlight] = [] {
         didSet {
-            setNeedsDisplay()
+            setNeedsDisplayIfHasHighlights()
         }
     }
     
@@ -142,16 +140,20 @@ open class HighlightTextView : UITextView, UIGestureRecognizerDelegate, Highligh
         handleHighlightTap(gestureRecognizer)
     }
     
-    open override var bounds: CGRect {
-        didSet {
-            // Did the view change? Is the view valid? Do we have highlights to draw?
-            guard oldValue != bounds && !bounds.isEmpty && !highlights.isEmpty else {return}
-            
-            highlights.modifyForEach { _, highlight in
-                highlight.rects = lineRectsFor(range: highlight.nsRange)
+    private var previousBounds: CGRect = .zero
+    
+    override open func layoutSubviews() {
+        super.layoutSubviews()
+        
+        // Best place to detect size changes is layoutSubviews: https://stackoverflow.com/a/50901862/2191796
+        // Bounds is already updated when this is called
+        if previousBounds != bounds {
+            // Need to update our highlights if the width changed
+            if previousBounds.width != bounds.width {
+                setNeedsDisplayIfHasHighlights()
             }
             
-            setNeedsDisplay()
+            previousBounds = bounds
         }
     }
     
@@ -159,15 +161,15 @@ open class HighlightTextView : UITextView, UIGestureRecognizerDelegate, Highligh
         super.draw(frame)
         
         for highlight in highlights {
-            highlight.draw()
+            highlight.draw(self)
         }
         
         if let current = currentHighlight {
-            current.draw()
+            current.draw(self)
         }
         
         if let editing = editingHighlight {
-            editing.draw()
+            editing.draw(self)
         }
     }
 }
@@ -258,7 +260,6 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
             let color = colorForNewHighlight
             currentHighlight = TextHighlight(
                 nsRange: newNSRange,
-                rects: lineRectsFor(range: newNSRange),
                 color: color,
                 cornerRadius: 6)
         }
@@ -272,7 +273,6 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
            let newNSRange = nsRangeFor(start: start, end: current),
            var currentHighlight = currentHighlight {
             currentHighlight.nsRange = newNSRange
-            currentHighlight.rects = lineRectsFor(range: currentHighlight.nsRange)
             
             self.currentHighlight = currentHighlight
         }
@@ -308,7 +308,6 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
            let newNSRange = nsRangeFor(start: start, end: current) {
             var editingHighlight = editingHighlight
             editingHighlight.nsRange = newNSRange
-            editingHighlight.rects = lineRectsFor(range: editingHighlight.nsRange)
             
             self.editingHighlight = editingHighlight
         }
@@ -325,6 +324,12 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
             }
             self.editingHighlight = nil
         }
+    }
+    
+    func setNeedsDisplayIfHasHighlights() {
+        guard !highlights.isEmpty else {return}
+        
+        setNeedsDisplay()
     }
 }
 
@@ -926,18 +931,4 @@ extension UIColor {
              return light
           }
        }
-}
-
-extension Array {
-    mutating func modifyForEach(_ body: (_ index: Index, _ element: inout Element) -> ()) {
-        for index in indices {
-            modifyElement(atIndex: index) { body(index, &$0) }
-        }
-    }
-
-    mutating func modifyElement(atIndex index: Index, _ modifyElement: (_ element: inout Element) -> ()) {
-        var element = self[index]
-        modifyElement(&element)
-        self[index] = element
-    }
 }
