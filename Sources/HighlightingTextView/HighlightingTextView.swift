@@ -23,12 +23,12 @@ public protocol HighlightingTextView : AnyObject {
     
     var highlights: [TextHighlight] { get set }
     
-    var currentHighlight: TextHighlight? { get set }
+    var editingHighlightIndex: Int? { get set }
     
-    var editingHighlight: TextHighlight? { get set }
+    var highlightDrawingInfo: [HighlightDrawingInfo] { get set }
 }
 
-public struct TextHighlight: Equatable {
+public struct TextHighlight {
     
     public init(nsRange: NSRange, color: UIColor, cornerRadius: CGFloat) {
         self.nsRange = nsRange
@@ -41,21 +41,24 @@ public struct TextHighlight: Equatable {
     public var color: UIColor
     
     public var cornerRadius: CGFloat
+}
+
+public struct HighlightDrawingInfo {
+    public var textHighlight: TextHighlight
+    public var rects: [CGRect]
     
     public func draw(_ textView: UITextView) {
-        let rects = textView.lineRectsFor(range: nsRange)
         let firstLine = rects.first
         let lastLine = rects.last
         
-        color.set()
+        textHighlight.color.set()
         
         for rect in rects {
             let path = UIBezierPath(
                 roundedRect: rect,
                 byRoundingCorners: UIRectCorner(rect, firstLine!, lastLine!),
-                cornerRadii: CGSize(width: cornerRadius, height: cornerRadius))
+                cornerRadii: CGSize(width: textHighlight.cornerRadius, height: textHighlight.cornerRadius))
             
-            //c.setShadow(offset: CGSize(width: 0, height: 1), blur: 1, color: UIColor.black.withAlphaComponent(0.05).cgColor)
             path.fill()
         }
         
@@ -85,17 +88,13 @@ open class HighlightTextView : UITextView, UIGestureRecognizerDelegate, Highligh
     
     open var highlights: [TextHighlight] = [] {
         didSet {
-            setNeedsDisplayIfHasHighlights()
+            calculateHighlightDrawingInfo()
         }
     }
     
-    open var currentHighlight: TextHighlight? {
-        didSet {
-            setNeedsDisplay()
-        }
-    }
+    open var editingHighlightIndex: Int?
     
-    open var editingHighlight: TextHighlight? {
+    open var highlightDrawingInfo: [HighlightDrawingInfo] = [] {
         didSet {
             setNeedsDisplay()
         }
@@ -150,9 +149,11 @@ open class HighlightTextView : UITextView, UIGestureRecognizerDelegate, Highligh
         if previousBounds != bounds {
             // Need to update our highlights if the width changed
             if previousBounds.width != bounds.width {
-                setNeedsDisplayIfHasHighlights()
+                calculateHighlightDrawingInfo()
             }
             
+            // Need to re-draw to keep highlights in sync while scrolling
+            setNeedsDisplayIfHasHighlights()
             previousBounds = bounds
         }
     }
@@ -160,16 +161,8 @@ open class HighlightTextView : UITextView, UIGestureRecognizerDelegate, Highligh
     open override func draw(_ frame: CGRect) {
         super.draw(frame)
         
-        for highlight in highlights {
-            highlight.draw(self)
-        }
-        
-        if let current = currentHighlight {
-            current.draw(self)
-        }
-        
-        if let editing = editingHighlight {
-            editing.draw(self)
+        for drawInfo in highlightDrawingInfo {
+            drawInfo.draw(self)
         }
     }
 }
@@ -257,72 +250,14 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
         if let start = startingPoint,
            let current = currentPoint,
            let newNSRange = nsRangeFor(start: start, end: current) {
-            let color = colorForNewHighlight
-            currentHighlight = TextHighlight(
+            let newHighlight = TextHighlight(
                 nsRange: newNSRange,
-                color: color,
+                color: colorForNewHighlight,
                 cornerRadius: 6)
-        }
-    }
-    
-    func handleNewHighlightChanged(_ gestureRecognizer: UIPanGestureRecognizer, _ location: CGPoint) {
-        currentPoint = closestPosition(to: location)
-        
-        if let start = startingPoint,
-           let current = currentPoint,
-           let newNSRange = nsRangeFor(start: start, end: current),
-           var currentHighlight = currentHighlight {
-            currentHighlight.nsRange = newNSRange
             
-            self.currentHighlight = currentHighlight
-        }
-    }
-    
-    func handleNewHighlightEnd(_ gestureRecognizer: UIPanGestureRecognizer, _ location: CGPoint) {
-        startingPoint = nil
-        currentPoint = nil
-        
-        if let currentHighlight = currentHighlight {
-            highlights.append(currentHighlight)
-            self.currentHighlight = nil
-        }
-    }
-    
-    func handleEditHighlightStart(_ gestureRecognizer: UIPanGestureRecognizer, _ location: CGPoint, _ editingHighlight: TextHighlight) {
-        //print("Start EDIT highlight")
-        //startingPoint = closestPosition(to: location)
-        self.editingHighlight = editingHighlight
-        
-        highlights.removeAll{$0 == editingHighlight}
-    }
-    
-    func handleEditHighlightChanged(_ gestureRecognizer: UIPanGestureRecognizer, _ location: CGPoint) {
-        guard let editingHighlight = editingHighlight else {
-            return print("EditingHighlight is nil while attempting to edit")
-        }
-
-        currentPoint = closestPosition(to: location)
-        
-        if let start = startingPoint,
-           let current = currentPoint,
-           let newNSRange = nsRangeFor(start: start, end: current) {
-            var editingHighlight = editingHighlight
-            editingHighlight.nsRange = newNSRange
+            highlights.append(newHighlight)
             
-            self.editingHighlight = editingHighlight
-        }
-    }
-    
-    func handleEditHighlightEnd(_ gestureRecognizer: UIPanGestureRecognizer, _ location: CGPoint) {
-        currentPoint = nil
-        startingPoint = nil
-        if let editingHighlight = editingHighlight {
-            if editingHighlight.nsRange.length > 0 {
-                highlights.append(editingHighlight)
-            } else {
-                print("Removing highlight. It was empty after finishing edit.")
-            }
-            self.editingHighlight = nil
+            editingHighlightIndex = highlights.count - 1
         }
     }
     
@@ -330,6 +265,14 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
         guard !highlights.isEmpty else {return}
         
         setNeedsDisplay()
+    }
+    
+    func calculateHighlightDrawingInfo() {
+        highlightDrawingInfo = highlights.map{
+            HighlightDrawingInfo(
+                textHighlight: $0,
+                rects: lineRectsFor(range: $0.nsRange))
+        }
     }
 }
 
@@ -370,14 +313,7 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
         
         switch (gestureRecognizer.state) {
         case .began:
-            // Are there characters at this range?
-            guard let charNsRange = characterNSRange(at: location, adjustToNearestNonWhiteSpace: true) else {
-                print("No characters found at gesture pan beginning. Aborting highlight.")
-                return gestureRecognizer.state = .cancelled
-            }
-            
             let touchLocation = gestureRecognizer.location(in: self)
-            
             let isTouchInAnExclusionPath = textContainer.exclusionPaths.contains{$0.bounds.contains(touchLocation)}
             
             if isTouchInAnExclusionPath {
@@ -385,10 +321,22 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
                 return gestureRecognizer.state = .cancelled
             }
             
+            // Are there characters at this range?
+            guard let charNsRange = characterNSRange(at: location, adjustToNearestNonWhiteSpace: true) else {
+                print("No characters found at gesture pan beginning. Aborting highlight.")
+                return gestureRecognizer.state = .cancelled
+            }
+            
+            var editingHighlightIndex = highlights.firstIndex{$0.nsRange.overlaps(charNsRange)}
+            
+            }
+            
             // Start a new highlight only when we are not editing an existing one
-            guard let editingHighlight = highlights.first(where: {$0.nsRange.overlaps(charNsRange)}) else {
+            guard let editingHighlightIndex = editingHighlightIndex else {
                 return handleNewHighlightStart(gestureRecognizer, location)
             }
+            
+            let editingHighlight = highlights[editingHighlightIndex]
             
             // Never expected
             guard let range = toTextRange(editingHighlight.nsRange) else {
@@ -417,23 +365,33 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
                 gestureRecognizer.state = .cancelled
             }
             
-            //print("Distance: Start: \(distanceFromStart) | End: \(distanceFromEnd)")
-            
             if startingPoint != nil {
-                handleEditHighlightStart(gestureRecognizer, location, editingHighlight)
+                self.editingHighlightIndex = editingHighlightIndex
             }
         case .changed:
-            if currentHighlight != nil {
-                handleNewHighlightChanged(gestureRecognizer, location)
-            } else {
-                handleEditHighlightChanged(gestureRecognizer, location)
+            guard let editingHighlightIndex = editingHighlightIndex else {
+                return print("EditingHighlight is nil while attempting to edit")
+            }
+
+            currentPoint = closestPosition(to: location)
+            
+            if let start = startingPoint,
+               let current = currentPoint,
+               let newNSRange = nsRangeFor(start: start, end: current) {
+                var editingHighlight = highlights[editingHighlightIndex]
+                editingHighlight.nsRange = newNSRange
+                
+                highlights[editingHighlightIndex] = editingHighlight
             }
         case .ended, .cancelled, .failed:
-            if currentHighlight != nil {
-                handleNewHighlightEnd(gestureRecognizer, location)
-            } else {
-                handleEditHighlightEnd(gestureRecognizer, location)
+            if let editingHighlightIndex = editingHighlightIndex, highlights[editingHighlightIndex].nsRange.length <= 0 {
+                highlights.remove(at: editingHighlightIndex)
+                print("Removing highlight. It was empty after finishing edit.")
             }
+            
+            currentPoint = nil
+            startingPoint = nil
+            editingHighlightIndex = nil
         default:break
         }
     }
