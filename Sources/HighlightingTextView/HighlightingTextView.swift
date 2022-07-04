@@ -26,6 +26,8 @@ public protocol HighlightingTextView : AnyObject {
     var editingHighlightIndex: Int? { get set }
     
     var highlightDrawingInfo: [HighlightDrawingInfo] { get set }
+    
+    var editHighlightInsteadOfCreateNewWhenNewIsNextToAndSameColor: Bool { get set }
 }
 
 public struct TextHighlight {
@@ -75,6 +77,8 @@ open class HighlightTextView : UITextView, UIGestureRecognizerDelegate, Highligh
     public var currentPoint: UITextPosition?
     
     open var colorForNewHighlight: UIColor = UIColor.highlightTextViewYellow
+    
+    public var editHighlightInsteadOfCreateNewWhenNewIsNextToAndSameColor = true
     
     open func menuActionsFor(menu: FanOutCircleMenu, highlight: TextHighlight) -> [UIView] {
         [
@@ -329,6 +333,31 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
             
             var editingHighlightIndex = highlights.firstIndex{$0.nsRange.overlaps(charNsRange)}
             
+            // Detect if the user is highlighting next to another highlight and the existing highlight has the same color as colorForNewHighlight
+            // If so, editing the exisiting highlight instead of starting a new highlight
+            if editHighlightInsteadOfCreateNewWhenNewIsNextToAndSameColor && editingHighlightIndex == nil {
+                if let currentPosition = closestPosition(to: touchLocation),
+                   let currentWordTextRange = tokenizer.rangeEnclosingPosition(currentPosition, with: .word, inDirection: UITextDirection.storage(.backward)) {
+                    // By expanding the touch range to a word range we can then go to the previous word end
+                    let currentWordNsRange = toNSRange(currentWordTextRange)
+                    let rangeToTheLeftOfTouch = NSRange(location: currentWordNsRange.location - 3, length: 1)
+                    
+                    if let highlightToTheLeftOfTouchIndex = highlights.firstIndex(where: {$0.nsRange.overlaps(rangeToTheLeftOfTouch) }) {
+                        // User is highlighting next to the current highlight with the same color.. consider it the same highlight and edit instead of starting a new one
+                        if highlights[highlightToTheLeftOfTouchIndex].color == colorForNewHighlight {
+                            editingHighlightIndex = highlightToTheLeftOfTouchIndex
+                        }
+                    } else {
+                        let rangeToTheRightOfTouch = NSRange(location: currentWordNsRange.location, length: currentWordNsRange.length + 3)
+                        
+                        if let highlightToTheRightOfTouchIndex = highlights.firstIndex(where: {$0.nsRange.overlaps(rangeToTheRightOfTouch) }) {
+                            // User is highlighting next to the current highlight with the same color.. consider it the same highlight and edit instead of starting a new one
+                            if highlights[highlightToTheRightOfTouchIndex].color == colorForNewHighlight {
+                                editingHighlightIndex = highlightToTheRightOfTouchIndex
+                            }
+                        }
+                    }
+                }
             }
             
             // Start a new highlight only when we are not editing an existing one
