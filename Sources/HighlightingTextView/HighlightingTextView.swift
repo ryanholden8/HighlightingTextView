@@ -151,8 +151,8 @@ open class HighlightTextView : UITextView, UIGestureRecognizerDelegate, Highligh
         // Best place to detect size changes is layoutSubviews: https://stackoverflow.com/a/50901862/2191796
         // Bounds is already updated when this is called
         if previousBounds != bounds {
-            // Need to update our highlights if the width changed
-            if previousBounds.width != bounds.width {
+            // Need to update our highlights if we change size or our content height changes.
+            if previousBounds.size != bounds.size {
                 calculateHighlightDrawingInfo()
             }
             
