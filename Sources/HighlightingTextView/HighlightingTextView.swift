@@ -240,6 +240,12 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
         highlightTapGesture.delegate = self
         addGestureRecognizer(highlightTapGesture)
         
+        // Don't show edit highlight options when tapping a URL
+        // https://stackoverflow.com/a/59010352/2191796
+        if let tapLinkGesture = gestureRecognizers?.first(where: { $0.name == "UITextInteractionNameLinkTap" }) {
+            highlightTapGesture.require(toFail: tapLinkGesture)
+        }
+        
         // Allow scroll to cancel highlight gesture
         //gesture.require(toFail: panGestureRecognizer)
         //panGestureRecognizer.requiresExclusiveTouchType = false
