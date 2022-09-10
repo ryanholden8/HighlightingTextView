@@ -443,6 +443,12 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
                 return
             }
             
+            let isTapInsideExclusionPath = textContainer.exclusionPaths.contains { $0.contains(location)  }
+            
+            guard !isTapInsideExclusionPath else {
+                return print("Tap detected inside an exclusion path. Aborting highlight menu.")
+            }
+            
             guard let charNsRange = characterNSRange(at: location, adjustToNearestNonWhiteSpace: true) else {return}
             
             guard let editingHighlight = highlights.first(where: {$0.nsRange.overlaps(charNsRange)}) else {return}
