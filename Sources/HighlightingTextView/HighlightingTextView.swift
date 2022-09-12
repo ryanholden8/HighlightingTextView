@@ -246,6 +246,13 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
             highlightTapGesture.require(toFail: tapLinkGesture)
         }
         
+        // Prevent the edit highlight from showing when scrolling is stopped.
+        // Which can happen when the user scrolls and then taps
+        // down to immedialty stop the scrolling. If the user taps
+        // down where a highlight is we don't really want the edit
+        // highlight menu showing in this situation
+        highlightTapGesture.require(toFail: panGestureRecognizer)
+        
         // Allow scroll to cancel highlight gesture
         //gesture.require(toFail: panGestureRecognizer)
         //panGestureRecognizer.requiresExclusiveTouchType = false
