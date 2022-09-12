@@ -784,24 +784,44 @@ extension UITextView {
         let heightChange: CGFloat = -4
         let lineHorizontalPadding:CGFloat = 5
         
-        layoutManager.enumerateLineFragments(
-            forGlyphRange: range,
-            using: { (rect, usedRect, textContainer, glyphRange, Bool) in
-                // Each line needs to get a fresh rect again on the line's glyphs range
-                // This is due to enumerateEnclosingRects returning combined line rects and thus we can not render line spacing for background color
-                let refinedLineRect = self.layoutManager.boundingRect(
-                    // Intersect so the last rect is to the range we passed in and not the full line rect
-                    forGlyphRange: glyphRange.intersection(range) ?? glyphRange,
-                    in: self.textContainer)
-                
-                let finalRect = CGRect(
-                    x: refinedLineRect.minX + containerInsets.left - (lineHorizontalPadding/2),
-                    y: refinedLineRect.minY + containerInsets.top - (heightChange/2),
-                    width: refinedLineRect.width + lineHorizontalPadding,
-                    height: refinedLineRect.height + heightChange)
-                
-                rects.append(finalRect)
-            })
+        // Nice examples of TextKit 2: https://shadowfacts.net/2022/textkit-2/
+        if #available(iOS 16.0, *) {
+            guard let textRange = textRange(from: range) else {return rects}
+            
+            textLayoutManager?.enumerateTextSegments(
+                in: textRange,
+                type: .highlight,
+                using: { textRangeForLineSegment, rect, floatOfSomeKind, container in
+                    let finalRect = CGRect(
+                        x: rect.minX + containerInsets.left - (lineHorizontalPadding/2),
+                        y: rect.minY + containerInsets.top - (heightChange/2),
+                        width: rect.width + lineHorizontalPadding/2,
+                        height: rect.height + heightChange)
+                    
+                    rects.append(finalRect)
+                    // Always continue our enumeration
+                    return true
+                })
+        } else {
+            layoutManager.enumerateLineFragments(
+                forGlyphRange: range,
+                using: { (rect, usedRect, textContainer, glyphRange, Bool) in
+                    // Each line needs to get a fresh rect again on the line's glyphs range
+                    // This is due to enumerateEnclosingRects returning combined line rects and thus we can not render line spacing for background color
+                    let refinedLineRect = self.layoutManager.boundingRect(
+                        // Intersect so the last rect is to the range we passed in and not the full line rect
+                        forGlyphRange: glyphRange.intersection(range) ?? glyphRange,
+                        in: self.textContainer)
+                    
+                    let finalRect = CGRect(
+                        x: refinedLineRect.minX + containerInsets.left - (lineHorizontalPadding/2),
+                        y: refinedLineRect.minY + containerInsets.top - (heightChange/2),
+                        width: refinedLineRect.width + lineHorizontalPadding/2,
+                        height: refinedLineRect.height + heightChange)
+                    
+                    rects.append(finalRect)
+                })
+        }
         
         return rects
     }
@@ -831,6 +851,19 @@ extension UITextView {
         }
         
         return toNSRange(narrowUITextRange)
+    }
+    
+    @available (iOS 16, *)
+    func textRange(from range: NSRange) -> NSTextRange? {
+        guard
+            let textLayoutManager,
+            let startLoc = textLayoutManager.location(textLayoutManager.documentRange.location, offsetBy: range.location),
+            let endLoc = textLayoutManager.location(startLoc, offsetBy: range.length),
+            let textRange = NSTextRange(location: startLoc, end: endLoc) else {
+                return nil
+        }
+        
+        return textRange
     }
     
 }

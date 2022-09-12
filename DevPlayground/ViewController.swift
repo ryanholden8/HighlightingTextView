@@ -24,7 +24,18 @@ class ViewController: UIViewController {
         
         let highlightTextView = HighlightTextView(frame: frame)
         
-        highlightTextView.text = "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit"
+        let content = NSMutableAttributedString()
+        
+        content.append(NSMutableAttributedString(
+            string: "2",
+            attributes: [NSAttributedString.Key.baselineOffset : 10]
+        ))
+                       
+       let paragraphString = NSMutableAttributedString(string: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit")
+                       
+       content.append(paragraphString)
+        
+        highlightTextView.attributedText = content
         
         highlightTextView.backgroundColor = .red
         highlightTextView.font = UIFont.systemFont(ofSize: 16)
@@ -41,7 +52,12 @@ class ViewController: UIViewController {
         
         let highlightTextView2 = HighlightTextView(frame: frame)
         
-        highlightTextView2.text = "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+        // NOTE: TextKit2 does not display the <sup> tags here. But displays correct above, so seems to be a bug.
+        let html = """
+        <sup>2</sup> html <b>ut</b> perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+        """
+        
+        highlightTextView2.attributedText = try! NSAttributedString(data: Data(html.utf8), options: [.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil)
         
         highlightTextView2.backgroundColor = .gray
         highlightTextView2.font = UIFont.systemFont(ofSize: 16)
