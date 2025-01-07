@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+@MainActor
 public protocol HighlightingTextView : AnyObject {
     
     var highlightPanGesture: HighlightingTextViewPanGesture { get }
@@ -855,7 +856,7 @@ extension UITextView {
         return toNSRange(narrowUITextRange)
     }
     
-    @available (iOS 16, *)
+    @available(iOS 16, *)
     func textRange(from range: NSRange) -> NSTextRange? {
         guard
             let textLayoutManager,
