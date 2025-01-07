@@ -118,6 +118,7 @@ open class HighlightTextView : UITextView, UIGestureRecognizerDelegate, Highligh
     
     open override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         //print("SHOULD BEGIN: \(String(describing: type(of: gestureRecognizer)).prefix(15)): \(gestureRecognizerShouldBeginWithHighlightGesture(gestureRecognizer)) \(super.gestureRecognizerShouldBegin(gestureRecognizer))")
+        // Returning false allows parent pan gestures in parent uiscrollview to attempt to scroll
         return gestureRecognizerShouldBeginWithHighlightGesture(gestureRecognizer) ?? super.gestureRecognizerShouldBegin(gestureRecognizer)
     }
     
@@ -125,7 +126,7 @@ open class HighlightTextView : UITextView, UIGestureRecognizerDelegate, Highligh
         //print("SHOULD SIMU: \(String(describing: type(of: gestureRecognizer)).prefix(15)) \(String(describing: type(of: otherGestureRecognizer)).prefix(15))")
         // do not allow scrolling while we highlight
         // We detect on type and instead of instance because we have nested HighlighingTextViews
-        if otherGestureRecognizer is HighlightingTextViewPanGesture { return false }
+        if otherGestureRecognizer is UIPanGestureRecognizer { return false }
         
         // Not sure if this is needed.. maybe cuts down on unwanted fan out menu popups?
         //if otherGestureRecognizer == highlightTapGesture {return false}
@@ -233,6 +234,7 @@ extension HighlightingTextView where Self : UITextView, Self : UIGestureRecogniz
         highlightPanGesture.maximumNumberOfTouches = 1
         highlightPanGesture.minimumNumberOfTouches = 1
         highlightPanGesture.delaysTouchesBegan = true
+        highlightPanGesture.delegate = self
         addGestureRecognizer(highlightPanGesture)
         
         highlightTapGesture.numberOfTapsRequired = 1
